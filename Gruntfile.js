@@ -262,6 +262,13 @@ module.exports = function (grunt) {
                 'copy:styles'//,
                 // 'imagemin'
             ]
+        },
+
+        'gh-pages': {
+          options: {
+            base: 'dist'
+          },
+          src: ['**']
         }
     });
 
@@ -289,6 +296,11 @@ module.exports = function (grunt) {
         'uglify:generated',
         'copy:dist',
         'usemin'
+    ]);
+
+    grunt.registerTask('push', [
+        'build',
+        'gh-pages'
     ]);
 
     grunt.registerTask('default', [
