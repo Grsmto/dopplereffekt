@@ -1,0 +1,32 @@
+/* Main Project imports ***********************/
+
+/*  Various project settings
+    that need to be set globally    ***********************/
+
+/* Bourbon & Neat Libraries ***********************/
+@import "./bower_components/bourbon/app/assets/stylesheets/_bourbon";
+@import "_base/_grid-settings";
+@import "./bower_components/neat/app/assets/stylesheets/_neat";
+
+/* Own mixins ***********************/
+@import "_addons/_rem"; // Rem sizing mixin
+
+/* Base styles ***********************/
+@import "_base/_colours";
+// @import "_base/_easings";
+@import "_base/_type";
+// @import "_base/_grid";
+@import "_base/_forms";
+@import "_base/_base";
+
+canvas {
+	display: block;
+}
+
+/* Plugin styles
+   Put them inside "plugins" folder ***********************/
+
+#stats { position: absolute; top:0; left: 0 }
+#stats #fps { background: transparent !important }
+#stats #fps #fpsText { color: #777 !important }
+#stats #fps #fpsGraph { display: none }

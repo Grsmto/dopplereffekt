@@ -1,0 +1,9 @@
+{
+  "name": "savse",
+  "private": true,
+  "dependencies": {
+    "bourbon": "~4.2.1",
+    "neat": "~1.7.1"
+  },
+  "devDependencies": {}
+}
