@@ -1,3 +1,6 @@
+Physijs.scripts.worker = '/javascripts/physijs_worker.js';
+Physijs.scripts.ammo = '/javascripts/ammo.js';
+
 var SCREEN_WIDTH = document.documentElement.clientWidth;
 var SCREEN_HEIGHT = document.documentElement.clientHeight;
 
@@ -84,7 +87,7 @@ function onWindowResize( event ) {
 
     renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
 
-    camera.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
+    camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
     camera.updateProjectionMatrix();
 }
 

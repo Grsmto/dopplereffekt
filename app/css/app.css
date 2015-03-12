@@ -1,56 +1,207 @@
-/*
-Error: File to import not found or unreadable: _base/_forms.
-       Load path: /Users/neverbland/Sites/dopplereffekt
-        on line 19 of app/scss/app.scss
+/* Main Project imports ***********************/
+/*  Various project settings
+    that need to be set globally    ***********************/
+/* Bourbon & Neat Libraries ***********************/
+/* Base grid options *********************/
+html {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
 
-14: /* Base styles ***********************\/
-15: @import "_base/_colours";
-16: // @import "_base/_easings";
-17: @import "_base/_type";
-18: // @import "_base/_grid";
-19: @import "_base/_forms";
-20: @import "_base/_base";
-21: 
-22: canvas {
-23: 	display: block;
-24: }
+*, *:before, *:after {
+  -webkit-box-sizing: inherit;
+  -moz-box-sizing: inherit;
+  box-sizing: inherit; }
 
-Backtrace:
-app/scss/app.scss:19
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/import_node.rb:66:in `rescue in import'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/import_node.rb:45:in `import'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/import_node.rb:28:in `imported_file'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/import_node.rb:37:in `css_import?'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/perform.rb:301:in `visit_import'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/base.rb:36:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/perform.rb:158:in `block in visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/stack.rb:79:in `block in with_base'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/stack.rb:115:in `with_frame'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/stack.rb:79:in `with_base'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/perform.rb:158:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/base.rb:52:in `block in visit_children'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/base.rb:52:in `map'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/base.rb:52:in `visit_children'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/perform.rb:167:in `block in visit_children'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/perform.rb:179:in `with_environment'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/perform.rb:166:in `visit_children'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/base.rb:36:in `block in visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/perform.rb:186:in `visit_root'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/base.rb:36:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/perform.rb:157:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/visitors/perform.rb:8:in `visit'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/root_node.rb:36:in `css_tree'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/tree/root_node.rb:20:in `render'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/engine.rb:268:in `render'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/exec/sass_scss.rb:404:in `run'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/exec/sass_scss.rb:62:in `process_result'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/exec/base.rb:52:in `parse'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/lib/sass/exec/base.rb:19:in `parse!'
-/Library/Ruby/Gems/2.0.0/gems/sass-3.4.5/bin/sass:13:in `<top (required)>'
-/usr/bin/sass:23:in `load'
-/usr/bin/sass:23:in `<main>'
-*/
-body:before {
-  white-space: pre;
-  font-family: monospace;
-  content: "Error: File to import not found or unreadable: _base/_forms.\A        Load path: /Users/neverbland/Sites/dopplereffekt\A         on line 19 of app/scss/app.scss\A \A 14: /* Base styles ***********************/\A 15: @import \"_base/_colours\";\A 16: // @import \"_base/_easings\";\A 17: @import \"_base/_type\";\A 18: // @import \"_base/_grid\";\A 19: @import \"_base/_forms\";\A 20: @import \"_base/_base\";\A 21: \A 22: canvas {\A 23: 	display: block;\A 24: }"; }
+/* Own mixins ***********************/
+/* Base styles ***********************/
+/* Colour variables ---------------------- */
+.red {
+  color: #E23C3C; }
+
+.green {
+  color: #4dc084; }
+
+.blue {
+  color: #108bbe; }
+
+/* Base type styles *********************/
+a {
+  color: #939393; }
+
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  font-family: sans-serif;
+  font-weight: bold;
+  font-style: normal;
+  color: #333333;
+  text-rendering: optimizeLegibility;
+  line-height: 1.1;
+  margin: 14px 0; }
+  h1.small, .h1.small,
+  h2.small, .h2.small,
+  h3.small, .h3.small,
+  h4.small, .h4.small,
+  h5.small, .h5.small,
+  h6.small, .h6.small {
+    font-size: 60%;
+    line-height: inherit; }
+
+h1,
+.h1 {
+  font-size: 44px;
+  line-height: 48.4px;
+  font-size: 4.4rem;
+  line-height: 4.84rem; }
+
+h2,
+.h2 {
+  font-size: 37px;
+  line-height: 40.7px;
+  font-size: 3.7rem;
+  line-height: 4.07rem; }
+
+h3,
+.h3 {
+  font-size: 27px;
+  line-height: 29.7px;
+  font-size: 2.7rem;
+  line-height: 2.97rem; }
+
+h4,
+.h4 {
+  font-size: 23px;
+  line-height: 25.3px;
+  font-size: 2.3rem;
+  line-height: 2.53rem; }
+
+h5,
+.h5 {
+  font-size: 17px;
+  line-height: 18.7px;
+  font-size: 1.7rem;
+  line-height: 1.87rem; }
+
+h6,
+.h6 {
+  font-size: 14px;
+  line-height: 15.8px;
+  font-size: 1.4rem;
+  line-height: 1.58rem; }
+
+p {
+  margin-bottom: 17px;
+  font-family: inherit;
+  font-weight: normal; }
+
+hr {
+  border: solid #dddddd;
+  border-width: 1px 0 0;
+  clear: both;
+  margin: 22px 0 21px;
+  height: 0; }
+
+em, i {
+  font-style: italic;
+  line-height: inherit; }
+
+strong, b {
+  font-weight: bold;
+  line-height: inherit; }
+
+small {
+  font-size: 60%;
+  line-height: inherit; }
+
+/* Base styles ---------------------- */
+html {
+  font-family: sans-serif;
+  font-size: 62.5%; }
+
+body {
+  position: relative;
+  background-color: #f7f5f2;
+  color: #333333; }
+
+.no-bullet, ul.no-bullet {
+  list-style: none; }
+
+/* Commonly used classes---------------------- */
+.fill-remainder {
+  float: none;
+  overflow: hidden; }
+
+.no-margin {
+  margin: 0; }
+
+.no-margin-i {
+  margin: 0 !important; }
+
+.no-padding {
+  padding: 0; }
+
+.no-padding-i {
+  padding: 0 !important; }
+
+.hide-c {
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden; }
+
+.no-transition {
+  -webkit-transition: all 0s !important;
+  -moz-transition: all 0s !important;
+  transition: all 0s !important; }
+
+.no-transition-i {
+  -webkit-transition: all 0s;
+  -moz-transition: all 0s;
+  transition: all 0s; }
+
+/* Misc ---------------------- */
+.left {
+  float: left; }
+
+.right {
+  float: right; }
+
+.text-left {
+  text-align: left; }
+
+.text-right {
+  text-align: right; }
+
+.text-center {
+  text-align: center; }
+
+.no-list-style {
+  list-style: none; }
+
+.hide {
+  display: none; }
+
+.hide-i {
+  display: none !important; }
+
+canvas {
+  display: block; }
+
+/* Plugin styles
+   Put them inside "plugins" folder ***********************/
+#stats {
+  position: absolute;
+  top: 0;
+  left: 0; }
+
+#stats #fps {
+  background: transparent !important; }
+
+#stats #fps #fpsText {
+  color: #777 !important; }
+
+#stats #fps #fpsGraph {
+  display: none; }
