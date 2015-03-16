@@ -5,14 +5,14 @@ var SCREEN_WIDTH = document.documentElement.clientWidth;
 var SCREEN_HEIGHT = document.documentElement.clientHeight;
 
 var container, stats;
-var camera, scene, renderer, mesh;
+var camera, scene, renderer, sphere;
 var cameraRig, activeCamera, activeHelper;
 var cameraPerspective, cameraOrtho;
 var cameraPerspectiveHelper, cameraOrthoHelper;
 
 var controls;
 
-var worldWidth = 256, worldDepth = 256,
+var worldWidth = 128, worldDepth = 128,
     worldHalfWidth = worldWidth / 2, worldHalfDepth = worldDepth / 2;
 
 var clock = new THREE.Clock();
@@ -22,60 +22,86 @@ function init() {
     container = document.createElement( 'div' );
     document.body.appendChild( container );
 
-    scene = new THREE.Scene();
+    scene = new Physijs.Scene();
+
+    scene.setGravity(new THREE.Vector3( 0, -1000, 0 ));
 
     scene.fog = new THREE.FogExp2( 0x111111, 0.001 );
 
     data = generateHeight( worldWidth, worldDepth );
 
     camera = new THREE.PerspectiveCamera( 50, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 10000 );
-    camera.position.z = 1000;
+    camera.position.z = 500;
+    camera.position.x = -800;
+    // camera.position.y = data[ worldHalfWidth + worldHalfDepth * worldWidth ] * 10;
+    camera.position.y = 400;
 
-    camera.position.y = data[ worldHalfWidth + worldHalfDepth * worldWidth ] * 10 - 500;
+    // camera.rotateOnAxis(new THREE.Vector3( 0, 1, 0 ), -Math.PI/2);
 
     controls = new THREE.FirstPersonControls( camera );
                     controls.movementSpeed = 150;
                     controls.lookSpeed = 0.1;
 
-    var geometry = new THREE.PlaneBufferGeometry( 7500, 7500, worldWidth - 1, worldDepth - 1 );
+    // controls.target = new THREE.Vector3( -1000, -1000, -400 );
 
-    geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+    var ground = new THREE.PlaneGeometry( 7500, 7500, worldWidth - 1, worldDepth - 1 );
 
-    var vertices = geometry.attributes.position.array;
+    ground.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 
-    for ( var i = 0, j = 0, l = vertices.length; i < l; i ++, j += 3 ) {
-        vertices[ j + 1 ] = data[ i ] * 1.5;
-    }
+    // var vertices = ground.attributes.position.array;
+
+    // for ( var i = 0, j = 0, l = vertices.length; i < l; i ++, j += 3 ) {
+    //     vertices[ j + 1 ] = data[ i ] * 1.5;
+    // }
 
     texture = new THREE.Texture( generateTexture( data, worldWidth, worldDepth ), THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping );
     texture.needsUpdate = true;
 
-    var material = new THREE.MeshBasicMaterial( { map: texture } );
-    var plane = new THREE.Mesh( geometry, material );
+    // var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } ); //new THREE.MeshBasicMaterial( { map: texture } )
+    var material = Physijs.createMaterial(
+                        new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }),
+                        .8, // high friction
+                        .5 // low restitution
+                    );
+    var plane = new Physijs.PlaneMesh( ground, material, 0 );
     scene.add( plane );
 
-    mesh = new THREE.Mesh( new THREE.SphereGeometry( 100, 16, 8 ), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } ) );
+    var sphereMaterial = Physijs.createMaterial(
+                            new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }),
+                            .6, // medium friction
+                            1 // low restitution
+                        );
+    sphere = new Physijs.SphereMesh( new THREE.SphereGeometry( 100, 16, 8 ), sphereMaterial );
     
-    mesh.position.y = 400;
+    sphere.position.y = 400;
 
-    scene.add( mesh );
+    scene.add( sphere );
 
+    // Box
+    box = new Physijs.BoxMesh(
+        new THREE.BoxGeometry( 100, 100, 100 ),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true })
+    );
+    box.position.y = 700;
+    box.position.z = 100;
 
-    var geometry = new THREE.Geometry();
+    scene.add( box );
 
-    for ( var i = 0; i < 10000; i ++ ) {
+    // var geometry = new THREE.Geometry();
 
-        var vertex = new THREE.Vector3();
-        vertex.x = THREE.Math.randFloatSpread( 2000 );
-        vertex.y = THREE.Math.randFloatSpread( 2000 );
-        vertex.z = THREE.Math.randFloatSpread( 2000 );
+    // for ( var i = 0; i < 10000; i ++ ) {
 
-        geometry.vertices.push( vertex );
+    //     var vertex = new THREE.Vector3();
+    //     vertex.x = THREE.Math.randFloatSpread( 2000 );
+    //     vertex.y = THREE.Math.randFloatSpread( 2000 );
+    //     vertex.z = THREE.Math.randFloatSpread( 2000 );
 
-    }
+    //     geometry.vertices.push( vertex );
 
-    var particles = new THREE.PointCloud( geometry, new THREE.PointCloudMaterial( { color: 0x888888 } ) );
-    scene.add( particles );
+    // }
+
+    // var particles = new THREE.PointCloud( geometry, new THREE.PointCloudMaterial( { color: 0x888888 } ) );
+    // scene.add( particles );
 
     //
 
@@ -125,20 +151,11 @@ function animate() {
 
 
 function render() {
-
-    // var r = Date.now() * 0.0005;
-
-    // mesh.position.x = 700 * Math.cos( r );
-    // mesh.position.z = 700 * Math.sin( r );
-    // mesh.position.y = 700 * Math.sin( r );
-    mesh.rotateOnAxis(new THREE.Vector3( 0, 1, 0 ), Math.PI/100);
-
-    // camera.lookAt( mesh.position );
+    // sphere.rotateOnAxis(new THREE.Vector3( 0, 1, 0 ), Math.PI/100);
 
     controls.update( clock.getDelta() );
 
-    // renderer.clear();
-
+    scene.simulate();
     renderer.render( scene, camera );
 
 }
