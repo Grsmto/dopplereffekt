@@ -6,11 +6,14 @@ var SCREEN_HEIGHT = document.documentElement.clientHeight;
 
 var container, stats;
 var camera, scene, renderer, sphere;
-var cameraRig, activeCamera, activeHelper;
-var cameraPerspective, cameraOrtho;
-var cameraPerspectiveHelper, cameraOrthoHelper;
+
+var raycaster;
+
+var mousePosition;
 
 var controls;
+
+var mouse = new THREE.Vector2(), INTERSECTED;
 
 var worldWidth = 128, worldDepth = 128,
     worldHalfWidth = worldWidth / 2, worldHalfDepth = worldDepth / 2;
@@ -39,8 +42,10 @@ function init() {
     // camera.rotateOnAxis(new THREE.Vector3( 0, 1, 0 ), -Math.PI/2);
 
     controls = new THREE.FirstPersonControls( camera );
-                    controls.movementSpeed = 150;
+                    controls.movementSpeed = 600;
                     controls.lookSpeed = 0.1;
+
+    raycaster = new THREE.Raycaster();
 
     // controls.target = new THREE.Vector3( -1000, -1000, -400 );
 
@@ -114,15 +119,94 @@ function init() {
 
     renderer.autoClear = false;
 
-    //
 
     stats = new Stats();
     container.appendChild( stats.domElement );
 
-    //
 
     window.addEventListener( 'resize', onWindowResize, false );
 
+    // scene.addEventListener('update', function() {
+        
+
+    //     scene.simulate( undefined, 2 );
+    // });
+
+    renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
+    renderer.domElement.addEventListener( 'mouseup', onDocumentMouseUp, false );
+}
+
+function setMousePosition( evt ) {
+    console.log(evt)
+    // Find where mouse cursor intersects the ground plane
+    // var vector = new THREE.Vector3(
+    //     ( evt.clientX / renderer.domElement.clientWidth ) * 2 - 1,
+    //     -( ( evt.clientY / renderer.domElement.clientHeight ) * 2 - 1 ),
+    //     .5
+    // );
+    // projector.unprojectVector( vector, camera );
+    // vector.sub( camera.position ).normalize();
+    
+    // var coefficient = (box.position.y - camera.position.y) / vector.y
+    // mouse_position = camera.position.clone().add( vector.multiplyScalar( coefficient ) );
+}
+
+function onDocumentMouseDown( event ) {
+
+    event.preventDefault();
+
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 ).unproject( camera );
+
+    var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+
+    var intersects = raycaster.intersectObjects([ sphere, box ]);
+
+    if ( intersects.length > 0 ) {
+
+        var strength = 35, distance, effect, offset;
+
+        // distance = mousePosition.distanceTo( box.position ),
+        effect = camera.position.clone().add(intersects[0].object.position).normalize().multiplyScalar(strength).negate(),
+
+        intersects[0].object.setAngularVelocity(effect);
+
+        scene.simulate();
+    }
+
+}
+
+function onDocumentMouseUp( event ) {
+
+    // event.preventDefault();
+
+    // controls.enabled = true;
+
+    // if ( INTERSECTED ) {
+
+    //     plane.position.copy( INTERSECTED.position );
+
+    //     SELECTED = null;
+
+    // }
+
+    // container.style.cursor = 'auto';
+
+}
+
+function applyForce() {
+    if (!mousePosition) return;
+    var strength = 35, distance, effect, offset, box;
+    
+    for ( var i = 0; i < boxes.length; i++ ) {
+        box = boxes[i];
+        distance = mousePosition.distanceTo( box.position ),
+        effect = mousePosition.clone().sub( box.position ).normalize().multiplyScalar( strength / distance ).negate(),
+        offset = mousePosition.clone().sub( box.position );
+        box.applyImpulse( effect, offset );
+    }
 }
 
 //
@@ -156,6 +240,7 @@ function render() {
     controls.update( clock.getDelta() );
 
     scene.simulate();
+
     renderer.render( scene, camera );
 
 }
