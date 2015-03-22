@@ -5,20 +5,24 @@ var SCREEN_WIDTH = document.documentElement.clientWidth;
 var SCREEN_HEIGHT = document.documentElement.clientHeight;
 
 var container, stats;
-var camera, scene, renderer, sphere;
+var camera, scene, renderer, sphere, intersectPlane;
 
 var raycaster;
 
 var mousePosition;
 
+var selectedObject = null;
+
 var controls;
 
-var mouse = new THREE.Vector2(), INTERSECTED;
+var mouse = new THREE.Vector3(), INTERSECTED;
 
 var worldWidth = 128, worldDepth = 128,
     worldHalfWidth = worldWidth / 2, worldHalfDepth = worldDepth / 2;
 
 var clock = new THREE.Clock();
+
+var _v3 = new THREE.Vector3;
 
 function init() {
 
@@ -36,18 +40,21 @@ function init() {
     camera = new THREE.PerspectiveCamera( 50, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 10000 );
     camera.position.z = 500;
     camera.position.x = -800;
-    // camera.position.y = data[ worldHalfWidth + worldHalfDepth * worldWidth ] * 10;
     camera.position.y = 400;
 
-    // camera.rotateOnAxis(new THREE.Vector3( 0, 1, 0 ), -Math.PI/2);
 
     controls = new THREE.FirstPersonControls( camera );
                     controls.movementSpeed = 600;
-                    controls.lookSpeed = 0.1;
+                    controls.lookSpeed = 0.15;
 
     raycaster = new THREE.Raycaster();
 
-    // controls.target = new THREE.Vector3( -1000, -1000, -400 );
+    intersectPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry( 1200, 1200 ),
+        new THREE.MeshBasicMaterial({ opacity: 0, transparent: true })
+    );
+
+    scene.add(intersectPlane);
 
     var ground = new THREE.PlaneGeometry( 7500, 7500, worldWidth - 1, worldDepth - 1 );
 
@@ -126,74 +133,101 @@ function init() {
 
     window.addEventListener( 'resize', onWindowResize, false );
 
-    // scene.addEventListener('update', function() {
-        
-
-    //     scene.simulate( undefined, 2 );
-    // });
-
     renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
+    renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
     renderer.domElement.addEventListener( 'mouseup', onDocumentMouseUp, false );
-}
 
-function setMousePosition( evt ) {
-    console.log(evt)
-    // Find where mouse cursor intersects the ground plane
-    // var vector = new THREE.Vector3(
-    //     ( evt.clientX / renderer.domElement.clientWidth ) * 2 - 1,
-    //     -( ( evt.clientY / renderer.domElement.clientHeight ) * 2 - 1 ),
-    //     .5
-    // );
-    // projector.unprojectVector( vector, camera );
-    // vector.sub( camera.position ).normalize();
-    
-    // var coefficient = (box.position.y - camera.position.y) / vector.y
-    // mouse_position = camera.position.clone().add( vector.multiplyScalar( coefficient ) );
+
+    scene.addEventListener('update', function() {
+        if (selectedObject !== null) {
+
+            intersectPlane.position.copy(camera.position);
+            intersectPlane.position.add(THREE.Utils.cameraLookDir(camera).multiplyScalar(500));
+            
+            // _v3.copy(mouse).sub(selectedObject.position).multiplyScalar(5);
+            _v3.copy(intersectPlane.position).sub(selectedObject.position).multiplyScalar(5);
+            // _v3 = intersectPlane.position.copy;
+            // intersectPlane.position.copy(camera.position);
+            // intersectPlane.position.add(THREE.Utils.cameraLookDir(camera).multiplyScalar(300));
+
+            selectedObject.setLinearVelocity( _v3 );
+            
+            // // Reactivate all of the blocks
+            // _v3.set( 0, 0, 0 );
+            // for ( _i = 0; _i < blocks.length; _i++ ) {
+            //     blocks[_i].applyCentralImpulse( _v3 );
+            // }
+        }
+
+        intersectPlane.lookAt(camera.position);
+
+        scene.simulate();
+    });
+
+
+    requestAnimationFrame(render);
+    scene.simulate();
 }
 
 function onDocumentMouseDown( event ) {
-
     event.preventDefault();
 
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    var mouseX = ( event.clientX / window.innerWidth ) * 2 - 1;
+    var mouseY = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
-    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 ).unproject( camera );
+    var mouseVector = new THREE.Vector3( mouseX, mouseY, 0.5 ).unproject( camera );
 
-    var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+    var raycaster = new THREE.Raycaster( camera.position, mouseVector.sub( camera.position ).normalize() );
 
     var intersects = raycaster.intersectObjects([ sphere, box ]);
 
     if ( intersects.length > 0 ) {
 
         var strength = 35, distance, effect, offset;
+        selectedObject = intersects[0].object;
 
-        // distance = mousePosition.distanceTo( box.position ),
-        effect = camera.position.clone().add(intersects[0].object.position).normalize().multiplyScalar(strength).negate(),
+        mouse.copy(intersects[0].point);
 
-        intersects[0].object.setAngularVelocity(effect);
+        var vector = new THREE.Vector3(0, 0, 0);
 
-        scene.simulate();
+        selectedObject.setAngularFactor( vector );
+        selectedObject.setAngularVelocity( vector );
+        selectedObject.setLinearFactor( vector );
+        selectedObject.setLinearVelocity( vector );
+
+        // intersectPlane.position.copy(mouse);
     }
 
 }
 
+function onDocumentMouseMove( event ) {
+    event.preventDefault();
+
+    var mouseX = ( event.clientX / window.innerWidth ) * 2 - 1;
+    var mouseY = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+    var vector = new THREE.Vector3(0, 0, 0);
+    var mouseVector = new THREE.Vector3( mouseX, mouseY, 0.5 ).unproject( camera );
+
+    if (selectedObject !== null) {
+        var raycaster = new THREE.Raycaster( camera.position, mouseVector.sub( camera.position ).normalize() );
+        var intersects = raycaster.intersectObject(intersectPlane);
+        // console.log(intersects)
+        intersectPlane.x = intersects[0].point.x;
+        intersectPlane.y = intersects[0].point.y;
+    }
+}
+
 function onDocumentMouseUp( event ) {
+    event.preventDefault();
 
-    // event.preventDefault();
-
-    // controls.enabled = true;
-
-    // if ( INTERSECTED ) {
-
-    //     plane.position.copy( INTERSECTED.position );
-
-    //     SELECTED = null;
-
-    // }
-
-    // container.style.cursor = 'auto';
-
+    if ( selectedObject !== null ) {
+        var vector = new THREE.Vector3(1, 1, 1);
+        selectedObject.setAngularFactor(vector);
+        selectedObject.setLinearFactor(vector);
+        
+        selectedObject = null;
+    }
 }
 
 function applyForce() {
@@ -222,29 +256,12 @@ function onWindowResize( event ) {
     camera.updateProjectionMatrix();
 }
 
-//
-
-function animate() {
-
-    requestAnimationFrame( animate );
-
-    render();
-    stats.update();
-
-}
-
-
 function render() {
-    // sphere.rotateOnAxis(new THREE.Vector3( 0, 1, 0 ), Math.PI/100);
-
-    controls.update( clock.getDelta() );
-
-    scene.simulate();
-
-    renderer.render( scene, camera );
-
+    requestAnimationFrame(render);
+    renderer.render(scene, camera);
+    controls.update(clock.getDelta());
+    stats.update();
 }
-
 
 function generateHeight( width, height ) {
 
@@ -339,5 +356,13 @@ function generateTexture( data, width, height ) {
 
 $(document).ready(function() {
     init();
-    animate();
 });
+
+
+THREE.Utils = {
+    cameraLookDir: function(camera) {
+        var vector = new THREE.Vector3(0, 0, -1);
+        vector.applyEuler(camera.rotation, camera.rotation.order);
+        return vector;
+    }
+};
